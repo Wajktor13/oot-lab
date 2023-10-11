@@ -60,7 +60,8 @@ public final class QueryExecutor {
     }
 
     public static int createAndObtainId(final String insertSql, Object... args) throws SQLException {
-        PreparedStatement statement = ConnectionProvider.getConnection().prepareStatement(insertSql, Statement.RETURN_GENERATED_KEYS);
+        PreparedStatement statement =
+                ConnectionProvider.getConnection().prepareStatement(insertSql, Statement.RETURN_GENERATED_KEYS);
         QueryHelper.mapParams(statement, args);
         statement.execute();
         try (final ResultSet resultSet = statement.getGeneratedKeys()) {

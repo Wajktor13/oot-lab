@@ -3,6 +3,7 @@ package pl.edu.agh.iisg.to.model;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
@@ -43,7 +44,26 @@ public class Student {
     }
 
     public static Optional<Student> findByIndexNumber(final int indexNumber) {
-        // TODO
+        String findByIdSql = "SELECT * FROM student WHERE index_number = (?)";
+        Object[] args = {
+                indexNumber
+        };
+
+        try (ResultSet rs = QueryExecutor.read(findByIdSql, args)) {
+            if (rs.next()) {
+                return Optional.of(new Student(
+                        rs.getInt("id"),
+                        rs.getString("first_name"),
+                        rs.getString("last_name"),
+                        rs.getInt("index_number")
+                ));
+            } else {
+                return Optional.empty();
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
         return Optional.empty();
     }
 
@@ -72,7 +92,32 @@ public class Student {
     }
 
     public Map<Course, Float> createReport() {
-        // TODO additional task
+        String query =
+                """
+                SELECT course_id, name as course_name, AVG(grade) as avg_grade FROM grade
+                JOIN main.course c on grade.course_id = c.id
+                GROUP BY course_id
+                """;
+        Object[] args = { };
+
+        Map<Course, Float> AvgGrades = new HashMap<>();
+
+        try (ResultSet rs = QueryExecutor.read(query, args)) {
+            while (rs.next()) {
+                Course course = new Course(
+                        rs.getInt("course_id"),
+                        rs.getString("course_name")
+                );
+
+                AvgGrades.put(course, rs.getFloat("avg_grade"));
+            }
+
+            return AvgGrades;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
         return Collections.emptyMap();
     }
 
