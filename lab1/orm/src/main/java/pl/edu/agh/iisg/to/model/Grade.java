@@ -24,7 +24,7 @@ public class Grade {
     @JoinColumn(name = Columns.COURSE_ID)
     private Course course;
 
-    Grade() {
+    public Grade() {
     }
 
     public Grade(final Student student, final Course course, final float grade) {
