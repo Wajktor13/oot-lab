@@ -28,7 +28,7 @@ public class Course {
     @OneToMany(mappedBy = "course")
     private Set<Grade> gradeSet = new HashSet<>();
 
-    Course() {
+    public Course() {
     }
 
     public Course(final String name) {
@@ -47,8 +47,25 @@ public class Course {
         return studentSet;
     }
 
+    public boolean addStudent(Student student) {
+        if (this.studentSet.contains(student)){
+            return false;
+        } else {
+            this.studentSet.add(student);
+            return true;
+        }
+    }
+
     public Set<Grade> gradeSet() {
         return gradeSet;
+    }
+
+    public void addGrade(Grade grade) {
+        this.gradeSet.add(grade);
+    }
+
+    public void removeGrade(Grade grade) {
+        this.gradeSet.remove(grade);
     }
 
     public static class Columns {

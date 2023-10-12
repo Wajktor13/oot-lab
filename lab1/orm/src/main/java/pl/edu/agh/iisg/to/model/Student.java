@@ -30,7 +30,7 @@ public class Student {
     @ManyToMany(mappedBy = "studentSet")
     private Set<Course> courseSet = new HashSet<>();
 
-    Student() {
+    public Student() {
     }
 
     public Student(final String firstName, final String lastName, final int indexNumber) {
@@ -59,8 +59,29 @@ public class Student {
         return courseSet;
     }
 
+    public boolean addCourse(Course course) {
+        if (this.courseSet.contains(course)){
+            return false;
+        } else {
+            this.courseSet.add(course);
+            return true;
+        }
+    }
+
+    public void removeCourse(Course course) {
+        this.courseSet.remove(course);
+    }
+
     public Set<Grade> gradeSet() {
         return gradeSet;
+    }
+
+    public void addGrade(Grade grade) {
+        this.gradeSet.add(grade);
+    }
+
+    public void removeGrade(Grade grade) {
+        this.gradeSet.remove(grade);
     }
 
     public static class Columns {
