@@ -1,11 +1,13 @@
 package app;
 
 import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.core.ObservableTransformer;
 import model.Photo;
 import util.PhotoDownloader;
 import util.PhotoProcessor;
 import util.PhotoSerializer;
 
+import javax.xml.transform.Transformer;
 import java.io.IOException;
 import java.util.List;
 import java.util.logging.Level;
@@ -33,9 +35,9 @@ public class PhotoCrawler {
 
     public void downloadPhotoExamples() {
         try {
-            Observable<Photo> source = photoDownloader.getPhotoExamples();
-
-            source.subscribe(photoSerializer::savePhoto, Throwable::printStackTrace);
+            photoDownloader.getPhotoExamples()
+                    .compose(this.processPhotos())
+                    .subscribe(photoSerializer::savePhoto, Throwable::printStackTrace);
 
         } catch (IOException e) {
             log.log(Level.SEVERE, "Downloading photo examples error", e);
@@ -43,8 +45,9 @@ public class PhotoCrawler {
     }
 
     public void downloadPhotosForQuery(String query) throws IOException {
-        Observable<Photo> source = photoDownloader.searchForPhotos(query);
-        source.subscribe(photoSerializer::savePhoto, Throwable::printStackTrace);
+        photoDownloader.searchForPhotos(query)
+                .compose(this.processPhotos())
+                .blockingSubscribe(photoSerializer::savePhoto, Throwable::printStackTrace);
     }
 
     public void downloadPhotosForMultipleQueries(List<String> queries) {
@@ -54,6 +57,14 @@ public class PhotoCrawler {
             source = source.mergeWith(photoDownloader.searchForPhotos(query));
         }
 
-        source.subscribe(photoSerializer::savePhoto, Throwable::printStackTrace);
+        source = source.compose(this.processPhotos());
+
+        source.blockingSubscribe(photoSerializer::savePhoto, Throwable::printStackTrace);
+    }
+
+    public ObservableTransformer<Photo, Photo> processPhotos() {
+        return source -> source
+                .filter(this.photoProcessor::isPhotoValid)
+                .map(this.photoProcessor::convertToMiniature);
     }
 }
