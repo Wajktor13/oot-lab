@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -32,16 +33,23 @@ public class PhotoDownloader {
     }
 
     public Observable<Photo> searchForPhotos(String searchQuery) {
-        return Observable.fromCallable(() -> DuckDuckGoDriver.searchForImages(searchQuery))
-                .flatMap(Observable::fromIterable)
-                .flatMap(photoUrl -> Observable.fromCallable(() -> getPhoto(photoUrl))
-                                .onErrorResumeNext(e -> {
-                                    log.log(Level.WARNING, "Could not download a photo", e);
-                                    return Observable.empty();
-                                })
-//                         Uncomment line below to download each photo in separate thread
-//                        .subscribeOn(Schedulers.computation())
-                );
+        Observable<Photo> source = Observable.create(observer -> {
+            try {
+                List<String> photoUrls = DuckDuckGoDriver.searchForImages(searchQuery);
+                for (String url : photoUrls) {
+                    observer.onNext(getPhoto(url));
+                }
+
+                observer.onComplete();
+
+            } catch (InterruptedException e) {
+                observer.onError(e);
+            } catch (IOException ignored) {
+                observer.onComplete();
+            }
+        });
+
+        return source.subscribeOn(Schedulers.computation());
     }
 
     private Photo getPhoto(String photoUrl) throws IOException {
