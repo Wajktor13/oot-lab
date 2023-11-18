@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 
 import command.AddTransactionCommand;
+import command.RemoveTransactionCommand;
 import javafx.beans.binding.Bindings;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -21,7 +22,7 @@ import model.Transaction;
 
 public class AccountOverviewController {
 
-	private Account data;
+	private Account account;
 
 	private AccountAppController appController;
 
@@ -96,8 +97,13 @@ public class AccountOverviewController {
 	private void handleDeleteAction(ActionEvent event) {
 		for (Transaction transaction : transactionsTable.getSelectionModel()
 				.getSelectedItems()) {
-			data.removeTransaction(transaction);
+
+			RemoveTransactionCommand removeTransactionCommand = new RemoveTransactionCommand(transaction,
+					this.account);
+			this.commandRegistry.executeCommand(removeTransactionCommand);
 		}
+
+		commandRegistry.clearUndoneCommandStack();
 	}
 
 	@FXML
@@ -114,7 +120,7 @@ public class AccountOverviewController {
 		Transaction transaction = Transaction.newTransaction();
 
 		if (appController.showTransactionEditDialog(transaction)) {
-			AddTransactionCommand addTransactionCommand = new AddTransactionCommand(transaction, data);
+			AddTransactionCommand addTransactionCommand = new AddTransactionCommand(transaction, account);
 			commandRegistry.executeCommand(addTransactionCommand);
 		}
 	}
@@ -129,9 +135,9 @@ public class AccountOverviewController {
 		commandRegistry.redo();
 	}
 
-	public void setData(Account acccount) {
-		this.data = acccount;
-		transactionsTable.setItems(data.getTransactions());
+	public void setAccount(Account acccount) {
+		this.account = acccount;
+		transactionsTable.setItems(account.getTransactions());
 	}
 
 	public void setAppController(AccountAppController appController) {

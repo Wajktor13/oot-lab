@@ -35,7 +35,7 @@ public class AccountAppController {
 			// set initial data into controller
 			AccountOverviewController controller = loader.getController();
 			controller.setAppController(this);
-			controller.setData(DataGenerator.generateAccountData());
+			controller.setAccount(DataGenerator.generateAccountData());
 			controller.setCommandRegistry(commandRegistry);
 
 			// add layout to a scene and show them all
