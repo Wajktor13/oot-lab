@@ -1,11 +1,10 @@
 package pl.edu.agh.to.school.course;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import pl.edu.agh.to.school.student.Student;
 import pl.edu.agh.to.school.student.StudentService;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
+import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,11 +12,12 @@ import java.util.List;
 public class Course {
 
     @Id
+    @GeneratedValue
     private Long id;
 
     private String name;
 
-    @OneToMany
+    @ManyToMany
     private final List<Student> students = new ArrayList<>();
 
     public Course(String name) {
@@ -31,10 +31,12 @@ public class Course {
     public Long getId() {
         return id;
     }
+
     public String getName() {
         return this.name;
     }
 
+    @JsonIgnore
     public List<Student> getStudents() {
         return this.students;
     }

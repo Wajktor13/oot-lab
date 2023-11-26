@@ -59,5 +59,7 @@ public class Student {
         return this.indexNumber;
     }
 
-//    public giveGrade()
+    public void giveGrade(Grade grade) {
+        this.grades.add(grade);
+    }
 }
