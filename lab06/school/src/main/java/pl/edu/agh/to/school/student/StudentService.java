@@ -18,13 +18,16 @@ public class StudentService {
 
     private final StudentRepository studentRepository;
     private final CourseService courseService;
-
     private final GradeService gradeService;
 
     public StudentService(StudentRepository studentRepository, CourseService courseService, GradeService gradeService) {
         this.studentRepository = studentRepository;
         this.courseService = courseService;
         this.gradeService = gradeService;
+    }
+
+    public Student getStudentById(Long id) {
+        return this.studentRepository.getReferenceById(id);
     }
 
     public List<Student> getStudents() {

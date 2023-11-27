@@ -9,6 +9,9 @@ import pl.edu.agh.to.school.student.Student;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping(path = "courses")
@@ -31,6 +34,16 @@ public class CourseController {
             Long idLong = Long.parseLong(id);
             return this.courseService.getAssignedStudents(idLong);
 
+        } catch (NumberFormatException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "course not found");
+        }
+    }
+
+    @GetMapping(path = "{id}/allMean")
+    public Map<Student, Float> getMeanForAllStudents(@PathVariable String id) {
+        try {
+            Long idLong = Long.parseLong(id);
+            return this.courseService.getMeanForAllStudents(idLong);
         } catch (NumberFormatException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "course not found");
         }
