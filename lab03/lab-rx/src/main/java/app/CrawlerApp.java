@@ -6,7 +6,7 @@ import java.util.List;
 
 public class CrawlerApp {
 
-    public static final String SCRAPER_API_KEY = "d74dddad0fcfe947e46e9eb82f991482";
+    public static final String SCRAPER_API_KEY = "";
 
     private static final List<String> TOPICS = List.of("Agent Cooper", "Sherlock", "Poirot", "Detective Monk");
 
